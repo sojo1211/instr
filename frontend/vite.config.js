@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/instr/',
+  // base removed for root deployment
   plugins: [react()],
   server: {
     proxy: {
