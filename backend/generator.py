@@ -341,7 +341,7 @@ def generate_cardnews_job(text_prompt: str, progress_callback=None):
         
     final_video = concatenate_videoclips(clips, method="compose")
     video_path = os.path.join(output_dir, "video_reels_9x16.mp4")
-    final_video.write_videofile(video_path, fps=24, codec="libx264", audio=False, logger=None)
+    final_video.write_videofile(video_path, fps=12, codec="libx264", audio=False, preset="ultrafast", logger=None)
     
     final_img_path = os.path.join(output_dir, "final_webtoon_9x16.png")
     Image.open(image_paths[0]).save(final_img_path)
