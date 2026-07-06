@@ -102,6 +102,13 @@ FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fr
 if os.path.exists(os.path.join(FRONTEND_DIR, "assets")):
     app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIR, "assets")), name="assets")
 
+@app.get("/")
+async def serve_root():
+    index_file = os.path.join(FRONTEND_DIR, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    return JSONResponse(status_code=404, content={"detail": "Frontend not built or index.html not found"})
+
 @app.get("/{full_path:path}")
 async def serve_frontend(full_path: str):
     # Allow serving other files in dist like favicon.ico, manifest.json, etc.
