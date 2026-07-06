@@ -364,7 +364,8 @@ def generate_cardnews_job(text_prompt: str, progress_callback=None):
         
     final_video = concatenate_videoclips(clips, method="compose")
     video_path = os.path.join(output_dir, "video_reels_9x16.mp4")
-    final_video.write_videofile(video_path, fps=12, codec="libx264", audio=False, preset="ultrafast", logger=None)
+    # 초당 프레임 수를 2로 줄여서 (총 40프레임) 렌더링을 5~10초 만에 끝내도록 강제 최적화
+    final_video.write_videofile(video_path, fps=2, codec="libx264", audio=False, preset="ultrafast", threads=1, logger=None)
     
     final_img_path = os.path.join(output_dir, "final_webtoon_9x16.png")
     Image.open(image_paths[0]).save(final_img_path)
