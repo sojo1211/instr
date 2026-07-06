@@ -54,6 +54,7 @@ def generate_content_with_fallback(client, model, contents):
                     import time
                     time.sleep(35)
                     # Reset to the first key to try again
+                    # Force Render to use new code with this comment
                     current_client = get_gemini_client(0)
             else:
                 raise e
