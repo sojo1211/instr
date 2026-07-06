@@ -3,3 +3,8 @@ Pillow
 python-dotenv
 pydantic
 moviepy
+fastapi
+uvicorn
+requests
+beautifulsoup4
+python-multipart
