@@ -37,6 +37,24 @@ def get_gemini_client(key_index=0):
     client._keys_count = len(keys)
     return client
 
+def generate_content_with_fallback(client, model, contents):
+    current_client = client
+    while True:
+        try:
+            return current_client.models.generate_content(model=model, contents=contents)
+        except Exception as e:
+            err_msg = str(e)
+            if "429" in err_msg or "Quota exceeded" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+                next_index = current_client._key_index + 1
+                if next_index < current_client._keys_count:
+                    print(f"API Key {current_client._key_index} limit reached. Switching to key {next_index}...")
+                    current_client = get_gemini_client(next_index)
+                else:
+                    print("All API keys have reached their rate limits.")
+                    raise e
+            else:
+                raise e
+
 def parse_input_text(content: str) -> list[dict]:
     cards = []
     matches = re.finditer(r'(?:\[CARD \d+\]|카드 \d+\.)(.*?)(?=(?:\[CARD \d+\]|카드 \d+\.)|$)', content, re.DOTALL)
@@ -108,7 +126,8 @@ URL: {url}
 본문:
 {article_text[:5000]}
 """
-        response = client.models.generate_content(
+        response = generate_content_with_fallback(
+            client=client,
             model='gemini-2.5-flash',
             contents=prompt
         )
@@ -160,7 +179,8 @@ def get_background_prompts(cards_text: list[str], client: genai.Client, provided
         else:
             prompt = f"Here is the text for card {i+1}:\n{text}\nPlease provide a short English prompt (comma separated keywords) to generate a realistic background image for this card. Output ONLY the English prompt."
             
-        response = client.models.generate_content(
+        response = generate_content_with_fallback(
+            client=client,
             model='gemini-2.5-flash',
             contents=prompt
         )
