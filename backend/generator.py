@@ -50,8 +50,11 @@ def generate_content_with_fallback(client, model, contents):
                     print(f"API Key {current_client._key_index} limit reached. Switching to key {next_index}...")
                     current_client = get_gemini_client(next_index)
                 else:
-                    print("All API keys have reached their rate limits.")
-                    raise e
+                    print("All API keys reached rate limit. Waiting for 35 seconds to retry...")
+                    import time
+                    time.sleep(35)
+                    # Reset to the first key to try again
+                    current_client = get_gemini_client(0)
             else:
                 raise e
 
